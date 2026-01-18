@@ -24,7 +24,5 @@ if __name__ == "__main__":
                 num_games_found += 1
                 game_names[game_uuid] = f"Game {num_games_found}"
                 image_links[game_uuid] = os.path.join(root, filename)
-    # TODO generate simple HTML page with clickable file links
     # TODO generate JSON file
-    # Alternatively write js code and make the HTML page export the json file instead of making the user modify it themselves
-    print("\n\n".join([f"{game_names[uuid]}: \"{link}\"\n" for uuid, link in image_links.items()]))
+    print("\n\n".join([f"{game_names[uuid]}: \"file:///{link.replace("\\","/" ).replace(" ", "%20")}\"\n" for uuid, link in image_links.items()]))
