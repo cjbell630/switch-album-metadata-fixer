@@ -1,4 +1,5 @@
 import argparse, os, json
+from pathlib import Path
 from common import dir_path, extract_game_uuid_from_filename
 
 if __name__ == "__main__":
@@ -25,7 +26,7 @@ if __name__ == "__main__":
             if game_uuid not in game_names:
                 num_games_found += 1
                 game_names[game_uuid] = f"Game {num_games_found}"
-                image_links[game_uuid] = os.path.join(root, filename)
+                image_links[game_uuid] = Path(os.path.join(root, filename)).as_uri()
 
     # Output json file with UUID and names
     with open("game_names.json", "w+") as outfile:
@@ -35,7 +36,7 @@ if __name__ == "__main__":
     # Print game numbers and file links
     print("\n\n".join(
         [
-            f"{game_names[uuid]}\n    -->  file:///{link.replace("\\", "/").replace(" ", "%20")}\n"
+            f"{game_names[uuid]}\n    -->  {link}\n"
             for uuid, link in image_links.items()
         ]
     ))
