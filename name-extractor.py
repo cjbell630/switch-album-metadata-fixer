@@ -25,4 +25,9 @@ if __name__ == "__main__":
                 game_names[game_uuid] = f"Game {num_games_found}"
                 image_links[game_uuid] = os.path.join(root, filename)
     # TODO generate JSON file
-    print("\n\n".join([f"{game_names[uuid]}: \"file:///{link.replace("\\","/" ).replace(" ", "%20")}\"\n" for uuid, link in image_links.items()]))
+    print("\n\n".join(
+        [
+            f"{game_names[uuid]}\n    -->  file:///{link.replace("\\", "/").replace(" ", "%20")}\n"
+            for uuid, link in image_links.items()
+        ]
+    ))
