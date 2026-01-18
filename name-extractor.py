@@ -1,4 +1,4 @@
-import argparse, os
+import argparse, os, json
 from common import dir_path, extract_game_uuid_from_filename
 
 if __name__ == "__main__":
@@ -9,6 +9,8 @@ if __name__ == "__main__":
         help="The path to the directory containing all of the photos and videos",
         type=dir_path
     )
+    # TODO add arg for output file path
+    # TODO add arg for input file path (master list)
     args = parser.parse_args()
     # END PARSE ARGS
 
@@ -24,7 +26,13 @@ if __name__ == "__main__":
                 num_games_found += 1
                 game_names[game_uuid] = f"Game {num_games_found}"
                 image_links[game_uuid] = os.path.join(root, filename)
-    # TODO generate JSON file
+
+    # Output json file with UUID and names
+    with open("game_names.json", "w+") as outfile:
+        json.dump(game_names, outfile, indent=4)
+        # TODO maybe add warning about overwriting file
+
+    # Print game numbers and file links
     print("\n\n".join(
         [
             f"{game_names[uuid]}\n    -->  file:///{link.replace("\\", "/").replace(" ", "%20")}\n"
