@@ -1,0 +1,19 @@
+.form-section {
+    background: darkgray;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+}
+
+.form-section:nth-child(odd) {
+    background: lightgray;
+}
+
+.form-section img {
+    width:50%;
+}
+
+.form-section label {
+    text-align: center;
+}

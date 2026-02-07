@@ -26,11 +26,17 @@ if __name__ == "__main__":
             if game_uuid not in game_names:
                 num_games_found += 1
                 game_names[game_uuid] = f"Game {num_games_found}"
-                image_links[game_uuid] = Path(os.path.join(root, filename)).as_uri()
+                # image_links[game_uuid] = Path(os.path.join(root, filename)).as_uri()
+                image_links[game_uuid] = os.path.join(root, filename)
 
     # Output json file with UUID and names
     with open("game_names.json", "w+") as outfile:
         json.dump(game_names, outfile, indent=4)
+        # TODO maybe add warning about overwriting file
+
+    # Output json file with UUID and names
+    with open("game_images.json", "w+") as outfile:
+        json.dump(image_links, outfile, indent=4)
         # TODO maybe add warning about overwriting file
 
     # Print game numbers and file links
