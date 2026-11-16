@@ -2,8 +2,8 @@ import argparse, os, json
 from pathlib import Path
 from common import dir_path, extract_game_uuid_from_filename
 
-if __name__ == "__main__":
-    # PARSE ARGS
+
+def process_args():
     parser = argparse.ArgumentParser("simple_example")
     parser.add_argument(
         "album_path",
@@ -12,8 +12,11 @@ if __name__ == "__main__":
     )
     # TODO add arg for output file path
     # TODO add arg for input file path (master list)
-    args = parser.parse_args()
-    # END PARSE ARGS
+    return parser.parse_args()
+
+
+if __name__ == "__main__":
+    args = process_args()
 
     game_names = {}
     image_links = {}
@@ -29,20 +32,23 @@ if __name__ == "__main__":
                 # image_links[game_uuid] = Path(os.path.join(root, filename)).as_uri()
                 image_links[game_uuid] = os.path.join(root, filename)
 
-    # Output json file with UUID and names
     with open("game_names.json", "w+") as outfile:
         json.dump(game_names, outfile, indent=4)
         # TODO maybe add warning about overwriting file
 
-    # Output json file with UUID and names
     with open("game_images.json", "w+") as outfile:
         json.dump(image_links, outfile, indent=4)
         # TODO maybe add warning about overwriting file
 
-    # Print game numbers and file links
-    print("\n\n".join(
-        [
-            f"{game_names[uuid]}\n    -->  {link}\n"
-            for uuid, link in image_links.items()
-        ]
-    ))
+    if False:
+        # Print game numbers and file links
+        print("\n\n".join(
+            [
+                f"{game_names[uuid]}\n    -->  {link}\n"
+                for uuid, link in image_links.items()
+            ]
+        ))
+    print(
+        "Game IDs extracted. Manually edit \"game_names.json\", "
+        "or run \"server.py\", then call TODO with the path to the edited JSON file."
+    )

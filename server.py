@@ -40,5 +40,5 @@ class Handler(SimpleHTTPRequestHandler):
             super().do_GET()
 
 server = HTTPServer(("0.0.0.0", 8000), Handler)
-print("Serving current directory + /read on http://localhost:8000")
+print("Use the HTML interface at http://localhost:8000 to assign names to unknown UUIDs.")
 server.serve_forever()
