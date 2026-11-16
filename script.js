@@ -1,7 +1,40 @@
-let list = document.querySelector("#main-form");
+let form = document.querySelector("#main-form");
+let name_data = {};
+
+/* Source - https://stackoverflow.com/a/64908345
+ * Posted by Stelios333, modified by community. See post 'Timeline' for change history
+ * Retrieved 2026-11-16, License - CC BY-SA 4.0
+ */
+function download(content, mimeType, filename){
+    const a = document.createElement('a') // Create "a" element
+    const blob = new Blob([content], {type: mimeType}) // Create a blob (file-like object)
+    const url = URL.createObjectURL(blob) // Create an object URL from blob
+    a.setAttribute('href', url) // Set "a" element link
+    a.setAttribute('download', filename) // Set download filename
+    a.click() // Start downloading
+}
+
+
+/**
+ * Compile the UUID: Name associaitions into a json file and prompt the user with Save As download
+ */
+function compileAndDownloadJSON() {
+    let inputs = form.querySelectorAll("input[type=text]");
+    inputs.forEach(input => {
+        let uuid = input.id;
+        let name = input.value;
+        name_data[uuid] = name;
+    });
+    download(JSON.stringify(name_data), "text/json", "game_names.json")
+}
+
+function handleForm(event){
+    event.preventDefault();
+    compileAndDownloadJSON();
+}
 
 function makeSectionDiv() {
-    const section = list.appendChild(document.createElement("div"));
+    const section = form.appendChild(document.createElement("div"));
     section.classList.add("form-section");
     return section
 }
@@ -20,20 +53,17 @@ function generateSectionForImage(gameID, imagePath) {
 }
 
 function populateList(data) {
+    name_data = data;
     for (const [gameID, url] of Object.entries(data)) {
         generateSectionForImage(gameID, url)
     }
     const submitSection = makeSectionDiv();
-    const button = submitSection.appendChild(document.createElement("button"));
-    // TODO onclick download json
+    const submit = submitSection.appendChild(document.createElement("input"));
+    submit.type = "submit"
+    submit.value = "Save"
+    form.addEventListener('submit', handleForm);
 }
 
-/**
- * Compile the UUID: Name associaitions into a json file and prompt the user with Save As download
- */
-function compileJSON() {
-    // TODO
-}
 
 fetch("./game_images.json")
     .then(res => res.json())
