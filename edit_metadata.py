@@ -34,6 +34,13 @@ def process_args():
 
 
 def get_time_from_filename(filename: str) -> datetime:
+    """
+    Creates a datetime from the timestamp in the provided filename.
+    Datetime is tz aware to the timezone provided when running the script
+
+    :param filename: the filename to parse
+    :return: timestamp as tz aware datetime
+    """
     time_string = filename.split("-")[0]
     cleaned_time_string = time_string[0:-2]
     print(cleaned_time_string)
