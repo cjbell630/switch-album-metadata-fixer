@@ -76,6 +76,7 @@ def format_offset(time: datetime) -> str:
 
 
 def set_metadata_for_video():
+    # TODO
     return
 
 
@@ -94,7 +95,7 @@ def fix_metadata_for_path(filename: str, full_path: str):
         0x9003: format_time(timestamp), # DateTimeOriginal
         0x9011: format_offset(timestamp), # OffsetTimeOriginal
         0x0110: "Nintendo Switch", # Model
-        # TODO add game name
+        0xa434: game_name # LensModel
     }
     extension = full_path.split(".")[-1]
     match (extension.lower()):
