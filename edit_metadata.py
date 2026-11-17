@@ -2,6 +2,13 @@ import argparse, os, json
 from pathlib import Path
 from common import dir_path, extract_game_uuid_from_filename
 
+UUID_NAMES = {}
+
+def load_name_json(path: str):
+    global UUID_NAMES
+    with open(path, "r") as file:
+        UUID_NAMES = json.load(file)
+
 
 def process_args():
     parser = argparse.ArgumentParser("simple_example")
@@ -22,7 +29,8 @@ def get_time_from_filename():
 
 
 def get_game_name_from_filename(filename: str) -> str:
-    return bruh
+    uuid = extract_game_uuid_from_filename(filename)
+    return UUID_NAMES[uuid]
 
 
 def format_time():
@@ -36,6 +44,7 @@ def set_metadata_for_image():
 
 def fix_metadata_for_path(filename: str, full_path: str):
     print(full_path)
+    game_name = get_game_name_from_filename(filename)
     # TODO get info from filename
     # TODO handle based on extension
     extension = full_path.split(".")[-1]
@@ -50,6 +59,7 @@ def fix_metadata_for_path(filename: str, full_path: str):
 
 if __name__ == "__main__":
     args = process_args()
+    load_name_json(args.data)
     print(
         f"This script will MODIFY the metadata for all files in {args.album_path}.\n"
         f"Currently, this CANNOT be undone automatically.\n"
