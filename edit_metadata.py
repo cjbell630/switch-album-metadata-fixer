@@ -1,8 +1,10 @@
 import argparse, os, json
 from pathlib import Path
 from common import dir_path, extract_game_uuid_from_filename
+from datetime import datetime
 
 UUID_NAMES = {}
+TIMEZONE = ""
 
 def load_name_json(path: str):
     global UUID_NAMES
@@ -24,17 +26,29 @@ def process_args():
     return parser.parse_args()
 
 
-def get_time_from_filename():
+def get_time_from_filename(filename: str) -> datetime:
     return bruh
 
 
 def get_game_name_from_filename(filename: str) -> str:
+    """
+    Extracts the UUID from the provided filename and returns the associated game name
+    Pre: the json data is loaded into UUID_NAMES
+    :param filename: the filename to extract from
+    :return: the game name associated with that file
+    """
     uuid = extract_game_uuid_from_filename(filename)
     return UUID_NAMES[uuid]
 
 
-def format_time():
-    return bruh
+def format_time(time: datetime) -> str:
+    """
+    Format time according to EXIF standard:
+    https://www.imagekit.com/IK8Help/source/controlreference/imagekitcontrol/file/exif/propertydatetimeoriginal.htm
+    :param time: datetime to format
+    :return: formatted string
+    """
+    return time.strftime("%Y:%m:%d %H:%M:%S")
 
 def set_metadata_for_video():
     return
