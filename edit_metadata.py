@@ -61,16 +61,28 @@ def get_game_name_from_filename(filename: str) -> str:
     return UUID_NAMES[uuid]
 
 
+def get_extension_from_filename(filename: str) -> str:
+    return filename.split(".")[-1]
+
+
 def format_time(time: datetime) -> str:
     """
     Format time according to EXIF standard:
     https://www.imagekit.com/IK8Help/source/controlreference/imagekitcontrol/file/exif/propertydatetimeoriginal.htm
+
     :param time: datetime to format
     :return: formatted string
     """
     return time.strftime("%Y:%m:%d %H:%M:%S")
 
+
 def format_offset(time: datetime) -> str:
+    """
+    Format offset according to EXIF standard (+00:00)
+
+    :param time: datetime to format
+    :return: formatted offset string
+    """
     offset_string = time.strftime("%z")
     return f"{offset_string[:3]}:{offset_string[3:]}"
 
@@ -92,12 +104,12 @@ def fix_metadata_for_path(filename: str, full_path: str):
     game_name = get_game_name_from_filename(filename)
     timestamp = get_time_from_filename(filename)
     exif_dict = {
-        0x9003: format_time(timestamp), # DateTimeOriginal
-        0x9011: format_offset(timestamp), # OffsetTimeOriginal
-        0x0110: "Nintendo Switch", # Model
-        0xa434: game_name # LensModel
+        0x9003: format_time(timestamp),  # DateTimeOriginal
+        0x9011: format_offset(timestamp),  # OffsetTimeOriginal # TODO skip offset if timezone not specified
+        0x0110: "Nintendo Switch",  # Model
+        0xa434: game_name  # LensModel
     }
-    extension = full_path.split(".")[-1]
+    extension = get_extension_from_filename(filename)
     match (extension.lower()):
         case "mp4":
             set_metadata_for_video()
