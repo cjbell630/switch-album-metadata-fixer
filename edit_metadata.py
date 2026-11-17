@@ -21,16 +21,31 @@ def get_time_from_filename():
     return bruh
 
 
-def get_game_name_from_filename():
+def get_game_name_from_filename(filename: str) -> str:
     return bruh
 
 
 def format_time():
     return bruh
 
+def set_metadata_for_video():
+    return
 
-def fix_metadata_for_path():
-    return bruh
+def set_metadata_for_image():
+    return
+
+def fix_metadata_for_path(filename: str, full_path: str):
+    print(full_path)
+    # TODO get info from filename
+    # TODO handle based on extension
+    extension = full_path.split(".")[-1]
+    match (extension.lower()):
+        case "mp4":
+            set_metadata_for_video()
+        case "jpg":
+            set_metadata_for_image()
+        case _:
+            raise Exception(f"unknown filetype \"{extension}\" found at: {full_path}")
 
 
 if __name__ == "__main__":
@@ -43,4 +58,4 @@ if __name__ == "__main__":
     input()
     for root, dirs, all_files in os.walk(args.album_path):
         for filename in all_files:
-            print("file")
+            fix_metadata_for_path(filename, os.path.join(root, filename))
