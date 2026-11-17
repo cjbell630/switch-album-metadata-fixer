@@ -3,9 +3,13 @@ from pathlib import Path
 from common import dir_path, extract_game_uuid_from_filename
 from datetime import datetime
 import pytz
+import PIL.Image
+import PIL.ExifTags
+import mutagen
 
 UUID_NAMES = {}
 TIMEZONE = pytz.timezone("UTC")
+
 
 def load_name_json(path: str):
     global UUID_NAMES
@@ -43,7 +47,6 @@ def get_time_from_filename(filename: str) -> datetime:
     """
     time_string = filename.split("-")[0]
     cleaned_time_string = time_string[0:-2]
-    print(cleaned_time_string)
     return TIMEZONE.localize(datetime.strptime(cleaned_time_string, "%Y%m%d%H%M%S"))
 
 
@@ -67,23 +70,38 @@ def format_time(time: datetime) -> str:
     """
     return time.strftime("%Y:%m:%d %H:%M:%S")
 
+def format_offset(time: datetime) -> str:
+    offset_string = time.strftime("%z")
+    return f"{offset_string[:3]}:{offset_string[3:]}"
+
+
 def set_metadata_for_video():
     return
 
-def set_metadata_for_image():
-    return
+
+def set_metadata_for_image(full_path: str, exif_dict):
+    image = PIL.Image.open(full_path)
+    exif = image.getexif()
+    for key, value in exif_dict.items():
+        exif[key] = value
+    image.save(full_path, exif=exif)
+
 
 def fix_metadata_for_path(filename: str, full_path: str):
-    print(full_path)
     game_name = get_game_name_from_filename(filename)
-    # TODO get info from filename
-    # TODO handle based on extension
+    timestamp = get_time_from_filename(filename)
+    exif_dict = {
+        0x9003: format_time(timestamp), # DateTimeOriginal
+        0x9011: format_offset(timestamp), # OffsetTimeOriginal
+        0x0110: "Nintendo Switch", # Model
+        # TODO add game name
+    }
     extension = full_path.split(".")[-1]
     match (extension.lower()):
         case "mp4":
             set_metadata_for_video()
         case "jpg":
-            set_metadata_for_image()
+            set_metadata_for_image(full_path, exif_dict)
         case _:
             raise Exception(f"unknown filetype \"{extension}\" found at: {full_path}")
 
@@ -100,6 +118,5 @@ if __name__ == "__main__":
     input()
     for root, dirs, all_files in os.walk(args.album_path):
         for filename in all_files:
-            print(filename)
-            print(get_time_from_filename(filename))
+            # TODO add loading string
             fix_metadata_for_path(filename, os.path.join(root, filename))
