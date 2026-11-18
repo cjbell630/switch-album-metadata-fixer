@@ -3,6 +3,14 @@
 Edits the EXIF data of photos from the Switch gallery to preserve information encoded in the filename (timezone, game)
 such that it can be viewed in a photo manager such as Immich or Google Photos.
 
+The EXIF data will be modified in the following manner:
+
+- `DateTimeOriginal`: date/time
+- `OffsetTimeOriginal`: offset (timezone) 
+- `Make`: "Nintendo co., ltd" (already set by the system on screenshots but not videos)
+- `Model`: "Nintendo Switch"
+- `LensModel`: game name (user defined)
+
 If your photo manager does not seem to accept the resulting metadata, feel free to modify the script to add additional
 metadata and submit a pull request!
 
