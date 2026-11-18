@@ -5,10 +5,18 @@ from datetime import datetime
 import pytz
 import PIL.Image
 import PIL.ExifTags
-import mutagen
+import exiftool
 
 UUID_NAMES = {}
 TIMEZONE = pytz.timezone("UTC")
+
+
+def get_num_files(dir_path: str) -> int:
+    num_files = 0
+    for root, dirs, all_files in os.walk(dir_path):
+        for _ in all_files:
+            num_files += 1
+    return num_files
 
 
 def load_name_json(path: str):
@@ -87,12 +95,31 @@ def format_offset(time: datetime) -> str:
     return f"{offset_string[:3]}:{offset_string[3:]}"
 
 
-def set_metadata_for_video():
-    # TODO
+def set_metadata_for_video(full_path: str, time_string: str, offset_string: str, game_name_string: str):
+    exif_dict = {
+        "DateTimeOriginal": time_string,
+        "OffsetTimeOriginal": offset_string,  # TODO skip offset if timezone not specified
+        "Make": "Nintendo co., ltd",  # Present in jpgs by default, add to mp4s to match
+        "Model": "Nintendo Switch",
+        "LensModel": game_name_string
+    }
+    with exiftool.ExifToolHelper() as exiftool_helper:
+        exif = exiftool_helper.get_metadata(full_path)[0]
+        exiftool_helper.set_tags(
+            [f"{exif['SourceFile']}"],
+            tags=exif_dict,
+            params=["-P", "-overwrite_original"]
+        )
     return
 
 
-def set_metadata_for_image(full_path: str, exif_dict):
+def set_metadata_for_image(full_path: str, time_string: str, offset_string: str, game_name_string: str):
+    exif_dict = {
+        0x9003: time_string,  # DateTimeOriginal
+        0x9011: offset_string,  # OffsetTimeOriginal # TODO skip offset if timezone not specified
+        0x0110: "Nintendo Switch",  # Model
+        0xa434: game_name_string  # LensModel
+    }
     image = PIL.Image.open(full_path)
     exif = image.getexif()
     for key, value in exif_dict.items():
@@ -103,18 +130,15 @@ def set_metadata_for_image(full_path: str, exif_dict):
 def fix_metadata_for_path(filename: str, full_path: str):
     game_name = get_game_name_from_filename(filename)
     timestamp = get_time_from_filename(filename)
-    exif_dict = {
-        0x9003: format_time(timestamp),  # DateTimeOriginal
-        0x9011: format_offset(timestamp),  # OffsetTimeOriginal # TODO skip offset if timezone not specified
-        0x0110: "Nintendo Switch",  # Model
-        0xa434: game_name  # LensModel
-    }
+    timestamp_string = format_time(timestamp)
+    offset_string = format_offset(timestamp)
+
     extension = get_extension_from_filename(filename)
     match (extension.lower()):
         case "mp4":
-            set_metadata_for_video()
+            set_metadata_for_video(full_path, timestamp_string, offset_string, game_name)
         case "jpg":
-            set_metadata_for_image(full_path, exif_dict)
+            set_metadata_for_image(full_path, timestamp_string, offset_string, game_name)
         case _:
             raise Exception(f"unknown filetype \"{extension}\" found at: {full_path}")
 
@@ -124,12 +148,19 @@ if __name__ == "__main__":
     TIMEZONE = pytz.timezone(args.timezone)
     load_name_json(args.data)
     print(
-        f"This script will MODIFY the metadata for all files in {args.album_path}.\n"
+        f"This script will MODIFY the metadata for all files in \"{args.album_path}\".\n"
+        f"It will assume the photos were taken in the timezone \"{TIMEZONE}\".\n"
         f"Currently, this CANNOT be undone automatically.\n"
         f"Press enter to continue, or stop the script (CTRL+C or equivalent)"
     )
     input()
+    print("Processing...")
+    total_files = get_num_files(args.album_path)
+    num_files_processed = 0
+
     for root, dirs, all_files in os.walk(args.album_path):
         for filename in all_files:
-            # TODO add loading string
             fix_metadata_for_path(filename, os.path.join(root, filename))
+            num_files_processed += 1
+            print(f"{num_files_processed}/{total_files}", end="\r")
+    print(f"Done! Processed {num_files_processed} files.")
