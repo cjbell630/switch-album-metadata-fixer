@@ -24,10 +24,14 @@ for you too! :)
 
 ### 1. Setup
 
-Download the source code from the [latest release](https://github.com/cjbell630/switch-album-metadata-fixer/releases/latest) and unzip/untar it.
+Download the source code from
+the [latest release](https://github.com/cjbell630/switch-album-metadata-fixer/releases/latest) and unzip/untar it.
 
 Navigate to the unzipped project directory and run `pip install -r requirements.txt`, or install manually.  
 Make sure you have `exiftool` installed on your system.
+
+> NOTE! Please make a backup of your album before running this script. Theoretically, it shouldn't do anything harmful,
+> but better safe than sorry.
 
 ### 2. Extract UUIDs
 
