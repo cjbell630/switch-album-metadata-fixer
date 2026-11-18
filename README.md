@@ -16,7 +16,9 @@ for you too! :)
 
 ### 1. Setup
 
-Navigate to the project directory and run `pip install -r requirements.txt`, or install manually.  
+Download the source code from the [latest release](https://github.com/cjbell630/switch-album-metadata-fixer/releases/latest) and unzip/untar it.
+
+Navigate to the unzipped project directory and run `pip install -r requirements.txt`, or install manually.  
 Make sure you have `exiftool` installed on your system.
 
 ### 2. Extract UUIDs
