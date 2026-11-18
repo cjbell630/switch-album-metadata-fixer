@@ -50,5 +50,5 @@ if __name__ == "__main__":
         ))
     print(
         "Game IDs extracted. Manually edit \"game_names.json\", "
-        "or run \"server.py\", then call TODO with the path to the edited JSON file."
+        "or run \"extract_uuids.py\", then call TODO with the path to the edited JSON file."
     )
