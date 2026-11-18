@@ -147,15 +147,15 @@ if __name__ == "__main__":
     args = process_args()
     TIMEZONE = pytz.timezone(args.timezone)
     load_name_json(args.data)
+    total_files = get_num_files(args.album_path)
     print(
-        f"This script will MODIFY the metadata for all files in \"{args.album_path}\".\n"
+        f"This script will MODIFY the metadata for {total_files} files in \"{args.album_path}\".\n"
         f"It will assume the photos were taken in the timezone \"{TIMEZONE}\".\n"
         f"Currently, this CANNOT be undone automatically.\n"
         f"Press enter to continue, or stop the script (CTRL+C or equivalent)"
     )
     input()
     print("Processing...")
-    total_files = get_num_files(args.album_path)
     num_files_processed = 0
 
     for root, dirs, all_files in os.walk(args.album_path):
@@ -163,4 +163,5 @@ if __name__ == "__main__":
             fix_metadata_for_path(filename, os.path.join(root, filename))
             num_files_processed += 1
             print(f"{num_files_processed}/{total_files}", end="\r")
+
     print(f"Done! Processed {num_files_processed} files.")
