@@ -5,8 +5,8 @@ such that it can be viewed in a photo manager such as Immich or Google Photos.
 
 The EXIF data will be modified in the following manner:
 
-- `DateTimeOriginal`: date/time
-- `OffsetTimeOriginal`: offset (timezone) 
+- `DateTimeOriginal`: date/time (local for images, UTC for videos)
+- `OffsetTimeOriginal`: offset (timezone)  (images ONLY)
 - `Make`: "Nintendo co., ltd" (already set by the system on screenshots but not videos)
 - `Model`: "Nintendo Switch"
 - `LensModel`: game name (user defined)

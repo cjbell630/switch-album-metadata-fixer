@@ -1,7 +1,7 @@
 import argparse, os, json
 from pathlib import Path
 from common import dir_path, extract_game_uuid_from_filename
-from datetime import datetime
+from datetime import datetime, timezone
 import pytz
 import PIL.Image
 import PIL.ExifTags
@@ -95,10 +95,11 @@ def format_offset(time: datetime) -> str:
     return f"{offset_string[:3]}:{offset_string[3:]}"
 
 
-def set_metadata_for_video(full_path: str, time_string: str, offset_string: str, game_name_string: str):
+def set_metadata_for_video(full_path: str, timestamp: datetime, game_name_string: str):
+    utc_timestamp = timestamp.astimezone(timezone.utc) # TODO if timezone not specified
+    timestamp_string = format_time(utc_timestamp)
     exif_dict = {
-        "DateTimeOriginal": time_string,
-        "OffsetTimeOriginal": offset_string,  # TODO skip offset if timezone not specified
+        "DateTimeOriginal": timestamp_string,
         "Make": "Nintendo co., ltd",  # Present in jpgs by default, add to mp4s to match
         "Model": "Nintendo Switch",
         "LensModel": game_name_string
@@ -113,9 +114,11 @@ def set_metadata_for_video(full_path: str, time_string: str, offset_string: str,
     return
 
 
-def set_metadata_for_image(full_path: str, time_string: str, offset_string: str, game_name_string: str):
+def set_metadata_for_image(full_path: str, timestamp: datetime, game_name_string: str):
+    timestamp_string = format_time(timestamp)
+    offset_string = format_offset(timestamp)
     exif_dict = {
-        0x9003: time_string,  # DateTimeOriginal
+        0x9003: timestamp_string,  # DateTimeOriginal
         0x9011: offset_string,  # OffsetTimeOriginal # TODO skip offset if timezone not specified
         0x0110: "Nintendo Switch",  # Model
         0xa434: game_name_string  # LensModel
@@ -130,15 +133,12 @@ def set_metadata_for_image(full_path: str, time_string: str, offset_string: str,
 def fix_metadata_for_path(filename: str, full_path: str):
     game_name = get_game_name_from_filename(filename)
     timestamp = get_time_from_filename(filename)
-    timestamp_string = format_time(timestamp)
-    offset_string = format_offset(timestamp)
-
     extension = get_extension_from_filename(filename)
     match (extension.lower()):
         case "mp4":
-            set_metadata_for_video(full_path, timestamp_string, offset_string, game_name)
+            set_metadata_for_video(full_path, timestamp, game_name)
         case "jpg":
-            set_metadata_for_image(full_path, timestamp_string, offset_string, game_name)
+            set_metadata_for_image(full_path, timestamp, game_name)
         case _:
             raise Exception(f"unknown filetype \"{extension}\" found at: {full_path}")
 
