@@ -1,6 +1,6 @@
 # Switch Album Metadata Fixer
 
-Edits the EXIF data of photos from the Switch gallery to preserve information encoded in the filename (timezone, game)
+Edits the EXIF data of photos from the Switch gallery to preserve information encoded in the filename (timestamp, game)
 such that it can be viewed in a photo manager such as Immich or Google Photos.
 
 The EXIF data will be modified in the following manner:
